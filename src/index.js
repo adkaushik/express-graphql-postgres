@@ -6,6 +6,7 @@ import cors from 'cors';
 
 import schema from './schema';
 import resolvers from './resolvers';
+import directives from './directives';
 
 import models, { sequelize } from './models';
 
@@ -15,9 +16,27 @@ app.use(cors());
 const server = new ApolloServer({
   typeDefs: schema,
   resolvers,
-  context: {
-    models
+  schemaDirectives: directives,
+  context: async ({ req }) => {
+
+    if (req) {
+      const identifier = req.headers.identifier;
+      console.log('came inside req');
+      let authToken = null;
+      if (req.headers.authorization && typeof req.headers.authorization === 'string') {
+        authToken = req.headers.authorization.split(' ')[1];
+      }
+
+      return {
+        models,
+        sequelize,
+        req,
+        authToken,
+      };
+    }
+    return {};
   },
+
   formatError: (error) => {
     const message = error.message
       .replace('SequelizeValidationError: ', '')

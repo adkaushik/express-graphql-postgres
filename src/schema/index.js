@@ -1,7 +1,9 @@
 import userSchema from './user';
+import authSchema from './auth';
 import { gql } from 'apollo-server-express';
 
 const linkSchema = gql `
+  directive @authenticate on QUERY | MUTATION | FIELD_DEFINITION
   scalar Date
   scalar JSON
   scalar Long
@@ -19,4 +21,4 @@ const linkSchema = gql `
   }
 `;
 
-export default [linkSchema, ...userSchema]
+export default [linkSchema, ...userSchema, ...authSchema];
